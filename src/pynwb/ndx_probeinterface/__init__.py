@@ -1,6 +1,8 @@
 import os
 from pynwb import load_namespaces, get_class
 
+from .constructors import from_probe, from_probegroup
+
 # Set path of the namespace.yaml file to the expected install location
 ndx_probeinterface_specpath = os.path.join(
     os.path.dirname(__file__),
@@ -23,4 +25,8 @@ load_namespaces(ndx_probeinterface_specpath)
 
 # TODO: import your classes here or define your class using get_class to make
 # them accessible at the package level
-TetrodeSeries = get_class('TetrodeSeries', 'ndx-probeinterface')
+Probe = get_class('Probe', 'ndx-probeinterface')
+
+# Add custom constructors
+Probe.from_probe = from_probe
+Probe.from_probegroup = from_probegroup
