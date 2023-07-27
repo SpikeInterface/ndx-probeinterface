@@ -139,6 +139,20 @@ def main():
                 dtype="text",
                 required=True,
             ),
+            NWBAttributeSpec(
+                name="unit",
+                doc="SI unit used to define the probe; e.g. 'meter'.",
+                dtype="text",
+                required=True,
+                default_value='meter'
+            ),
+            NWBAttributeSpec(
+                name="conversion",
+                doc="Scalar to multiply each parameter to convert to the specified unit; e.g. 1e-6.",
+                dtype="float",
+                required=True,
+                default_value=1e-6
+            ),
         ],
         neurodata_type_inc="Device",
         neurodata_type_def="Probe",
