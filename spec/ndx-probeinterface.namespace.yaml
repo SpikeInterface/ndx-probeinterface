@@ -1,13 +1,16 @@
 namespaces:
 - author:
   - Alessio Buccino
+  - Kyu Hyun Lee
   contact:
   - alessiop.buccino@gmail.com
+  - kyuhyun9056@gmail.com
   doc: Extension for defining neural probes in the probeinterface format
   name: ndx-probeinterface
   schema:
   - namespace: core
     neurodata_types:
-    - ElectricalSeries
+    - Device
+  - namespace: hdmf-common
   - source: ndx-probeinterface.extensions.yaml
   version: 0.1.0

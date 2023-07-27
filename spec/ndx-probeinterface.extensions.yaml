@@ -1,8 +1,104 @@
 groups:
-- neurodata_type_def: TetrodeSeries
-  neurodata_type_inc: ElectricalSeries
-  doc: An extension of ElectricalSeries to include the tetrode ID for each time series.
+- neurodata_type_def: Probe
+  neurodata_type_inc: Device
+  doc: Neural probe object according to probeinterface specification
   attributes:
-  - name: trode_id
-    dtype: int32
-    doc: The tetrode ID.
+  - name: ndim
+    dtype: int
+    default_value: 2
+    doc: dimension of the probe
+    required: false
+  - name: type
+    dtype: text
+    doc: type of the probe; e.g. 'silicon probe', 'microwire tetrodes', etc.
+  - name: model
+    dtype: text
+    doc: model of the probe; e.g. 'Neuropixels 1.0'
+  - name: serial number
+    dtype: text
+    doc: serial number of the probe
+  - name: unit
+    dtype: text
+    default_value: meter
+    doc: SI unit used to define the probe; e.g. 'meter'.
+    required: false
+  - name: conversion
+    dtype: float
+    default_value: 1e-06
+    doc: Scalar to multiply each parameter to convert to the specified unit; e.g.
+      1e-6.
+    required: false
+  groups:
+  - neurodata_type_inc: Shank
+    doc: Neural probe shank object according to probeinterface specification
+    quantity: '*'
+- neurodata_type_def: Shank
+  neurodata_type_inc: NWBContainer
+  doc: Neural probe shanks according to probeinterface specification
+  attributes:
+  - name: shank id
+    dtype: int
+    doc: ID of the shank in the probe; must be an integer
+  groups:
+  - neurodata_type_inc: ContactTable
+    doc: Neural probe contacts according to probeinterface specification
+- neurodata_type_def: ContactTable
+  neurodata_type_inc: DynamicTable
+  doc: Neural probe contacts according to probeinterface specification
+  datasets:
+  - name: contact_ids
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: unique ID of the contact
+  - name: contact_shapes
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: shape of the contact; e.g. 'circle'
+  - name: contact_shape_params
+    neurodata_type_inc: VectorData
+    dtype: float
+    doc: size of the contact; e.g. if the contact is circular and has radius of 10um,
+      put '10'
+  - name: contact_plane_axes
+    neurodata_type_inc: VectorData
+    dtype: float
+    dims:
+    - - num_contacts
+      - v1, v2
+      - x,y
+    - - num_contacts
+      - v1,v2
+      - x, y, z
+    shape:
+    - - null
+      - 2
+      - 2
+    - - null
+      - 2
+      - 3
+    doc: dimension of the probe
+  - name: contact_positions
+    neurodata_type_inc: VectorData
+    dtype: float
+    dims:
+    - - num_contacts
+      - x, y
+    - - num_contacts
+      - x, y, z
+    shape:
+    - - null
+      - 2
+    - - null
+      - 3
+    doc: dimension of the probe
+  - name: contact_annotations
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: annotation of the contact
+  - name: device_channel_indices
+    neurodata_type_inc: VectorData
+    dtype: int
+    doc: ID of the channel connected to the contact
+  - name: electrode
+    neurodata_type_inc: DynamicTableRegion
+    doc: electrode ID in ElectrodeTable; should link to ElectrodeTable
