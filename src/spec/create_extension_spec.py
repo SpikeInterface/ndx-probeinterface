@@ -12,8 +12,10 @@ def main():
         doc="""Extension for defining neural probes in the probeinterface format""",
         name="""ndx-probeinterface""",
         version="""0.1.0""",
-        author=list(map(str.strip, """Alessio Buccino""".split(','))),
-        contact=list(map(str.strip, """alessiop.buccino@gmail.com""".split(',')))
+        author=list([map(str.strip, """Alessio Buccino""".split(',')),
+                     map(str.strip, """Kyu Hyun Lee""".split(','))]),
+        contact=list([map(str.strip, """alessiop.buccino@gmail.com""".split(',')),
+                      map(str.strip, """kyuhyun9056@gmail.com""".split(','))]),
     )
 
     # TODO: specify the neurodata_types that are used by the extension as well
