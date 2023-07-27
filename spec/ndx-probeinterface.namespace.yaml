@@ -1,0 +1,13 @@
+namespaces:
+- author:
+  - Alessio Buccino
+  contact:
+  - alessiop.buccino@gmail.com
+  doc: Extension for defining neural probes in the probeinterface format
+  name: ndx-probeinterface
+  schema:
+  - namespace: core
+    neurodata_types:
+    - ElectricalSeries
+  - source: ndx-probeinterface.extensions.yaml
+  version: 0.1.0
