@@ -49,5 +49,10 @@ for ndx_probe in ndx_probes:
     pi_probes.append(pi_probe)
 ```
 
+## Future plans
+- Add information about the headstage used for data acquisition
+- Remove redundant information from `ElectrodeTable`
+- Incorporate this NDX into the core NWB schema
+
 ---
 This extension was created using [ndx-template](https://github.com/nwb-extensions/ndx-template).
