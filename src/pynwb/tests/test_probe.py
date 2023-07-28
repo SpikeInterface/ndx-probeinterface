@@ -174,7 +174,7 @@ class TestProbeRoundtrip(TestCase):
         for path in [self.path0, self.path1, self.path2]:
             remove_test_file(path)
 
-    def test_roundtrip_from_probe_single_shank(self):
+    def test_roundtrip_nwb_from_probe_single_shank(self):
         device = Probe.from_probe(self.probe0)
         self.nwbfile0.add_device(device)
 
@@ -184,9 +184,9 @@ class TestProbeRoundtrip(TestCase):
         with NWBHDF5IO(self.path0, mode="r", load_namespaces=True) as io:
             read_nwbfile = io.read()
             devices = read_nwbfile.devices
-            self.assertContainerEqual(device, read_nwbfile.devices[device.name])
+            self.assertContainerEqual(device, read_nwbfile.devices[device.name])            
 
-    def test_roundtrip_from_probe_multi_shank(self):
+    def test_roundtrip_nwb_from_probe_multi_shank(self):
         device = Probe.from_probe(self.probe1)
         self.nwbfile1.add_device(device)
 
@@ -198,7 +198,7 @@ class TestProbeRoundtrip(TestCase):
             devices = read_nwbfile.devices
             self.assertContainerEqual(device, read_nwbfile.devices[device.name])
 
-    def test_roundtrip_from_probegroup(self):
+    def test_roundtrip_nwb_from_probegroup(self):
         devices = Probe.from_probegroup(self.probegroup)
         for device in devices:
             self.nwbfile2.add_device(device)
@@ -210,6 +210,16 @@ class TestProbeRoundtrip(TestCase):
             read_nwbfile = io.read()
             for device in devices:
                 self.assertContainerEqual(device, read_nwbfile.devices[device.name])
+
+    def test_roundtrip_pi_from_probe_single_shank(self):
+        probe_arr = self.probe0.to_numpy()
+        device = Probe.from_probe(self.probe0)
+        np.testing.assert_array_equal(probe_arr, device.to_probeinterface().to_numpy())    
+
+    def test_roundtrip_pi_from_probe_multi_shank(self):
+        probe_arr = self.probe1.to_numpy()
+        device = Probe.from_probe(self.probe1)
+        np.testing.assert_array_equal(probe_arr, device.to_probeinterface().to_numpy())
 
 
 if __name__ == "__main__":
@@ -223,6 +233,8 @@ if __name__ == "__main__":
     test1.setUp()
     # test.test_constructor_from_probe_single_shank()
     # test.test_constructor_from_probe_multi_shank()
-    test1.test_roundtrip_from_probe_single_shank()
-    test1.test_roundtrip_from_probe_multi_shank()
-    test1.test_roundtrip_from_probegroup()
+    test1.test_roundtrip_pi_from_probe_single_shank()
+    test1.test_roundtrip_pi_from_probe_multi_shank()
+    
+    # test1.test_roundtrip_from_probe_multi_shank()
+    # test1.test_roundtrip_from_probegroup()

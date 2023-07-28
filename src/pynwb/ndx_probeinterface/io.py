@@ -69,38 +69,60 @@ def to_probeinterface(ndx_probeinterface_probe) -> Probe:
     polygon = ndx_probeinterface_probe.planar_contour
 
     positions = []
-    contact_ids = []
     shapes = []
-    shape_params = []
-    shank_ids = []
-    plane_axes = []
-    channel_indices = []
+
+    contact_ids = None
+    shape_params = None
+    shank_ids = None
+    plane_axes = None
+    device_channel_indices = None
+
+    possible_shape_keys = ["radius", "width", "height"]
     for shank in ndx_probeinterface_probe.shanks.values():
         positions.append(shank.contact_table["contact_position"][:])
-        contact_ids.append(shank.contact_table["contact_id"][:])
         shapes.append(shank.contact_table["contact_shape"][:])
-        channel_indices.append(shank.contact_table["device_channel_index_pi"][:])
-        plane_axes.append(shank.contact_table["contact_plane_axes"][:])
-        shank_ids.append([int(shank.shank_id)] * len(shank.contact_table))
-        # WARNING: currently assumes that all the contacts have the same shape
-        shape_word = [shape for shape in shape_words if shape in shank.contact_table[:].columns][0]
-        shape_params.append([{shape_word: val} for val in shank.contact_table[shape_word][:]])
+        if "contact_id" in shank.contact_table.colnames:
+            if contact_ids is None:
+                contact_ids = []
+            contact_ids.append(shank.contact_table["contact_id"][:])
+        if "device_channel_index_pi" in shank.contact_table.colnames:
+            if device_channel_indices is None:
+                device_channel_indices = []
+            device_channel_indices.append(shank.contact_table["device_channel_index_pi"][:])
+        if "contact_plane_axes" in shank.contact_table.colnames:
+            if plane_axes is None:
+                plane_axes = []
+            plane_axes.append(shank.contact_table["contact_plane_axes"][:])
+        if shank_ids is None:
+            shank_ids = []
+        shank_ids.append([str(shank.shank_id)] * len(shank.contact_table))
+        for possible_shape_key in possible_shape_keys:
+            if possible_shape_key in shank.contact_table.colnames:
+                if shape_params is None:
+                    shape_params = []
+                shape_params.append([{possible_shape_key: val} for val in shank.contact_table[possible_shape_key][:]])
 
     positions = [item for sublist in positions for item in sublist]
-    contact_ids = [item for sublist in contact_ids for item in sublist]
     shapes = [item for sublist in shapes for item in sublist]
-    plane_axes = [item for sublist in plane_axes for item in sublist]
-    shank_ids = [item for sublist in shank_ids for item in sublist]
-    channel_indices = [item for sublist in channel_indices for item in sublist]
-    shape_params = [item for sublist in shape_params for item in sublist]
+
+    if contact_ids is not None:
+        contact_ids = [item for sublist in contact_ids for item in sublist]
+    if plane_axes is not None:
+        plane_axes = [item for sublist in plane_axes for item in sublist]
+    if shape_params is not None:
+        shape_params = [item for sublist in shape_params for item in sublist]
+    if shank_ids is not None:
+        shank_ids = [item for sublist in shank_ids for item in sublist]
+    if device_channel_indices is not None:
+        device_channel_indices = [item for sublist in channel_indices for item in sublist]
 
     probeinterface_probe = Probe(ndim=ndim, si_units=unit)
     probeinterface_probe.set_contacts(
         positions=positions, shapes=shapes, shape_params=shape_params, plane_axes=plane_axes, shank_ids=shank_ids
     )
     probeinterface_probe.set_contact_ids(contact_ids=contact_ids)
-    probeinterface_probe.set_device_channel_indices(channel_indices=channel_indices)
-
+    if device_channel_indices is not None:
+        probeinterface_probe.set_device_channel_indices(channel_indices=device_channel_indices)
     probeinterface_probe.set_planar_contour(polygon)
 
     return probeinterface_probe
