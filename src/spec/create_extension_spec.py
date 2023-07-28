@@ -30,7 +30,7 @@ def main():
         datasets=[
             NWBDatasetSpec(
                 name="contact_position",
-                doc="dimension of the probe",
+                doc="position of the contact",
                 dtype="float",
                 dims=[["num_contacts", "x, y"], ["num_contacts", "x, y, z"]],
                 shape=[[None, 2], [None, 3]],
@@ -58,7 +58,7 @@ def main():
             ),
             NWBDatasetSpec(
                 name="contact_plane_axes",
-                doc="dimension of the probe",
+                doc="the axes defining the contact plane",
                 dtype="float",
                 dims=[["num_contacts", "v1, v2", "x,y"], ["num_contacts", "v1,v2", "x, y, z"]],
                 shape=[[None, 2, 2], [None, 2, 3]],
@@ -67,28 +67,28 @@ def main():
             ),
             NWBDatasetSpec(
                 name="radius",
-                doc="Radius of a circular contact",
+                doc="radius of a circular contact",
                 dtype="float",
                 neurodata_type_inc="VectorData",
                 quantity="?",
             ),
             NWBDatasetSpec(
                 name="width",
-                doc="Width of a rectangular or square contact",
+                doc="width of a rectangular or square contact",
                 dtype="float",
                 neurodata_type_inc="VectorData",
                 quantity="?",
             ),
             NWBDatasetSpec(
                 name="height",
-                doc="Height of a rectangular contact",
+                doc="height of a rectangular contact",
                 dtype="float",
                 neurodata_type_inc="VectorData",
                 quantity="?",
             ),
             NWBDatasetSpec(
                 name="device_channel_index_pi",
-                doc="ID of the channel connected to the contact",
+                doc="index of the channel connected to the contact",
                 dtype="int",
                 neurodata_type_inc="VectorData",
                 quantity="?",
