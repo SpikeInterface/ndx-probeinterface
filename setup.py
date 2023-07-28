@@ -20,6 +20,14 @@ try:
 except Exception:
     readme = ""
 
+def open_requirements(fname):
+    with open(fname, mode='r') as f:
+        requires = f.read().split('\n')
+    requires = [e for e in requires if len(e) > 0 and not e.startswith('#')]
+    return requires
+    
+install_requires = open_requirements('requirements.txt')
+
 setup_args = {
     'name': 'ndx-probeinterface',
     'version': '0.1.0',
@@ -30,10 +38,7 @@ setup_args = {
     'author_email': 'alessiop.buccino@gmail.com',
     'url': '',
     'license': 'MIT',
-    'install_requires': [
-        'pynwb>=1.5.0,<3',
-        'hdmf>=2.5.6,<4',
-    ],
+    'install_requires': install_requires,
     'packages': find_packages('src/pynwb', exclude=["tests", "tests.*"]),
     'package_dir': {'': 'src/pynwb'},
     'package_data': {'ndx_probeinterface': [
