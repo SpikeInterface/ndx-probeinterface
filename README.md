@@ -21,5 +21,10 @@ import ndx_probeinterface
 ndx_probe = ndx_probeinterface.from_probe(pi_probe)
 ```
 
+## Future plans
+- Add information about the headstage used for data acquisition
+- Remove redundant information from `ElectrodeTable`
+- Incorporate this NDX into the core NWB schema
+
 ---
 This extension was created using [ndx-template](https://github.com/nwb-extensions/ndx-template).
