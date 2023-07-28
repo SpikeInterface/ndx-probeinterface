@@ -69,20 +69,25 @@ def to_probeinterface(ndx_probeinterface_Probe)->Probe:
     
     positions = []
     shapes = []
-    for shank_name, shank in ndx_probeinterface_Probe.shanks.items():
+    shape_params = []
+    shank_ids = []
+    plane_axes = []
+    for shank in ndx_probeinterface_Probe.shanks:
         positions.append(shank.contact_table['contact_position'][:])
         shapes.append(shank.contact_table['contact_shape'][:])
-        
+        shank_ids.append(shank.shank_id * len(shank.contact_table))
+        plane_axes.append(shank.contact_table['contact_plane_axes'][:])
         # WARNING: currently assumes that all the contacts have the same shape
         shape_word = [shape for shape in shape_words if shape in shank.contact_table[:].columns][0]
-        shape_params = [{shape_word: val} for val in shank.contact_table[shape_word][:]]
+        shape_params.append([{shape_word: val} for val in shank.contact_table[shape_word][:]])
 
     probeinterface_Probe = Probe(ndim=ndim, si_units=unit)
     probeinterface_Probe.set_contacts(positions=positions,
                                       shapes=shapes,
-                                      shape_params=shape_params)
+                                      shape_params=shape_params,
+                                      plane_axes=plane_axes,
+                                      shank_ids=shank_ids)
     probeinterface_Probe.set_planar_contour(polygon)
-
 
     return probeinterface_Probe
 
