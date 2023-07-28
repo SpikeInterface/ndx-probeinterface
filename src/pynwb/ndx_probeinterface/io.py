@@ -2,12 +2,14 @@ from typing import Union, List, Optional
 import numpy as np
 from probeinterface import Probe, ProbeGroup
 
-
 unit_map = {
     "um": "micrometer",
     "mm": "millimeter",
     "m": "meter",
 }
+inverted_unit_map = {v: k for k, v in unit_map.items()}
+
+shape_words = ['radius', 'width', 'width/height']
 
 def from_probe(probe: Probe):
     """
@@ -48,10 +50,41 @@ def from_probegroup(probegroup: ProbeGroup):
     return devices
 
 
-def to_probeinterface():
+def to_probeinterface(ndx_probeinterface_Probe)->Probe:
     """
+    Construct a probeinterface.Probe from ndx-probeinterface Probe
+
+    Parameters
+    ----------
+    ndx_probeinterface_Probe: ndx_probeinterface.Probe
+        ndx_probeinterface.Probe to convert to probeinterface.Probe 
+    
+    Returns
+    -------
+    Probe: probeinterface.Probe 
     """
-    pass
+    ndim = ndx_probeinterface_Probe.ndim
+    unit = inverted_unit_map[ndx_probeinterface_Probe.unit]
+    polygon = ndx_probeinterface_Probe.planar_contour
+    
+    positions = []
+    shapes = []
+    for shank_name, shank in ndx_probeinterface_Probe.shanks.items():
+        positions.append(shank.contact_table['contact_position'][:])
+        shapes.append(shank.contact_table['contact_shape'][:])
+        
+        # WARNING: currently assumes that all the contacts have the same shape
+        shape_word = [shape for shape in shape_words if shape in shank.contact_table[:].columns][0]
+        shape_params = [{shape_word: val} for val in shank.contact_table[shape_word][:]]
+
+    probeinterface_Probe = Probe(ndim=ndim, si_units=unit)
+    probeinterface_Probe.set_contacts(positions=positions,
+                                      shapes=shapes,
+                                      shape_params=shape_params)
+    probeinterface_Probe.set_planar_contour(polygon)
+
+
+    return probeinterface_Probe
 
 
 def _single_probe_to_nwb_device(probe: Probe):
