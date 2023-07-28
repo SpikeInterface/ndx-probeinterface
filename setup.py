@@ -28,13 +28,17 @@ def open_requirements(fname):
     
 install_requires = open_requirements('requirements.txt')
 
+d = {}
+exec(open("src/pynwb/ndx_probeinterface/version.py").read(), None, d)
+version = d['version']
+
 setup_args = {
     'name': 'ndx-probeinterface',
-    'version': '0.1.0',
+    'version': version,
     'description': 'Extension for defining neural probes in the probeinterface format',
     'long_description': readme,
     'long_description_content_type': readme_type,
-    'author': 'Alessio Buccino',
+    'author': 'Alessio Buccino, Kyu Hyun Lee, Geeling Chau',
     'author_email': 'alessiop.buccino@gmail.com',
     'url': '',
     'license': 'MIT',
