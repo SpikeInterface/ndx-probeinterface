@@ -58,7 +58,8 @@ class TestProbeConstructors(TestCase):
         """Test that the constructor from Probe sets values as expected for single-shank."""
 
         probe = self.probe0
-        device = Probe.from_probe(probe)
+        devices = Probe.from_probeinterface(probe)
+        device = devices[0]
         # assert correct objects
         self.assertIsInstance(device, Device)
         self.assertIsInstance(device, Probe)
@@ -76,7 +77,8 @@ class TestProbeConstructors(TestCase):
         # set channel indices
         device_channel_indices = np.arange(probe.get_contact_count())
         probe.set_device_channel_indices(device_channel_indices)
-        device_w_indices = Probe.from_probe(probe)
+        devices_w_indices = Probe.from_probeinterface(probe)
+        device_w_indices = devices_w_indices[0]
         shank_names = list(device_w_indices.shanks.keys())
         contact_table = device_w_indices.shanks[shank_names[0]].contact_table
         np.testing.assert_array_equal(contact_table["device_channel_index_pi"][:], device_channel_indices)
@@ -85,7 +87,8 @@ class TestProbeConstructors(TestCase):
         """Test that the constructor from Probe sets values as expected for multi-shank."""
 
         probe = self.probe1
-        device = Probe.from_probe(probe)
+        devices = Probe.from_probeinterface(probe)
+        device = devices[0]
         # assert correct objects
         self.assertIsInstance(device, Device)
         self.assertIsInstance(device, Probe)
@@ -100,7 +103,8 @@ class TestProbeConstructors(TestCase):
         # set channel indices
         device_channel_indices = np.arange(probe.get_contact_count())
         probe.set_device_channel_indices(device_channel_indices)
-        device_w_indices = Probe.from_probe(probe)
+        devices_w_indices = Probe.from_probeinterface(probe)
+        device_w_indices = devices_w_indices[0]
         for i_s, shank_name in enumerate(shank_names):
             contact_table = device_w_indices.shanks[shank_name].contact_table
             pi_shank = probe.get_shanks()[i_s]
@@ -120,7 +124,7 @@ class TestProbeConstructors(TestCase):
         probegroup = self.probegroup
         global_device_channel_indices = np.arange(probegroup.get_channel_count())
         probegroup.set_global_device_channel_indices(global_device_channel_indices)
-        devices = Probe.from_probegroup(probegroup)
+        devices = Probe.from_probeinterface(probegroup)
         probes = probegroup.probes
         shank_counts = [1, 2]
 
@@ -175,7 +179,8 @@ class TestProbeRoundtrip(TestCase):
             remove_test_file(path)
 
     def test_roundtrip_nwb_from_probe_single_shank(self):
-        device = Probe.from_probe(self.probe0)
+        devices = Probe.from_probeinterface(self.probe0)
+        device = devices[0]
         self.nwbfile0.add_device(device)
 
         with NWBHDF5IO(self.path0, mode="w") as io:
@@ -187,7 +192,8 @@ class TestProbeRoundtrip(TestCase):
             self.assertContainerEqual(device, read_nwbfile.devices[device.name])            
 
     def test_roundtrip_nwb_from_probe_multi_shank(self):
-        device = Probe.from_probe(self.probe1)
+        devices = Probe.from_probeinterface(self.probe1)
+        device = devices[0]
         self.nwbfile1.add_device(device)
 
         with NWBHDF5IO(self.path1, mode="w") as io:
@@ -199,7 +205,7 @@ class TestProbeRoundtrip(TestCase):
             self.assertContainerEqual(device, read_nwbfile.devices[device.name])
 
     def test_roundtrip_nwb_from_probegroup(self):
-        devices = Probe.from_probegroup(self.probegroup)
+        devices = Probe.from_probeinterface(self.probegroup)
         for device in devices:
             self.nwbfile2.add_device(device)
 
@@ -213,12 +219,14 @@ class TestProbeRoundtrip(TestCase):
 
     def test_roundtrip_pi_from_probe_single_shank(self):
         probe_arr = self.probe0.to_numpy()
-        device = Probe.from_probe(self.probe0)
+        devices = Probe.from_probeinterface(self.probe0)
+        device = devices[0]
         np.testing.assert_array_equal(probe_arr, device.to_probeinterface().to_numpy())    
 
     def test_roundtrip_pi_from_probe_multi_shank(self):
         probe_arr = self.probe1.to_numpy()
-        device = Probe.from_probe(self.probe1)
+        devices = Probe.from_probeinterface(self.probe1)
+        device = devices[0]
         np.testing.assert_array_equal(probe_arr, device.to_probeinterface().to_numpy())
 
 

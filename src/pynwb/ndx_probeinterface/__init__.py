@@ -22,8 +22,7 @@ ContactTable = get_class("ContactTable", "ndx-probeinterface")
 
 
 # Add custom constructors
-from .io import from_probe, from_probegroup, to_probeinterface
+from .io import from_probeinterface, to_probeinterface
 
-Probe.from_probe = from_probe
-Probe.from_probegroup = from_probegroup
+Probe.from_probeinterface = from_probeinterface
 Probe.to_probeinterface = to_probeinterface

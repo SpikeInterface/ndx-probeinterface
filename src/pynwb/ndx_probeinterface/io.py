@@ -1,6 +1,7 @@
 from typing import Union, List, Optional
 import numpy as np
 from probeinterface import Probe, ProbeGroup
+from pynwb.file import Device
 
 unit_map = {
     "um": "micrometer",
@@ -10,7 +11,7 @@ unit_map = {
 inverted_unit_map = {v: k for k, v in unit_map.items()}
 
 
-def from_probe(probe: Probe):
+def from_probeinterface(probe_or_probegroup: Union[Probe, ProbeGroup]) -> List[Device]:
     """
     Construct ndx-probeinterface Probe devices from a probeinterface.Probe
 
@@ -21,11 +22,18 @@ def from_probe(probe: Probe):
 
     Returns
     -------
-    devices: ndx_probeinterface.Probe
-        The ndx-probeinterface Probe device
+    devices: list
+        The list of ndx-probeinterface Probe devices
     """
-    assert isinstance(probe, Probe)
-    return _single_probe_to_nwb_device(probe)
+    assert isinstance(probe_or_probegroup, (Probe, ProbeGroup)), f"The input must be a Probe or ProbeGroup, not {type(probe_or_probegroup)}"
+    if isinstance(probe_or_probegroup, Probe):
+        probes = [probe_or_probegroup]
+    else:
+        probes = probe_or_probegroup.probes
+    devices = []
+    for probe in probes:
+        devices.append(_single_probe_to_nwb_device(probe))
+    return devices
 
 
 def from_probegroup(probegroup: ProbeGroup):
