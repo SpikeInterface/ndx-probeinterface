@@ -40,17 +40,6 @@ groups:
       - 3
     doc: The planar polygon that outlines the probe contour.
   groups:
-  - neurodata_type_inc: Shank
-    doc: Neural probe shank object according to probeinterface specification
-    quantity: '*'
-- neurodata_type_def: Shank
-  neurodata_type_inc: NWBContainer
-  doc: Neural probe shanks according to probeinterface specification
-  attributes:
-  - name: shank_id
-    dtype: text
-    doc: ID of the shank in the probe; must be a str
-  groups:
   - neurodata_type_inc: ContactTable
     doc: Neural probe contacts according to probeinterface specification
 - neurodata_type_def: ContactTable
@@ -79,6 +68,11 @@ groups:
     neurodata_type_inc: VectorData
     dtype: text
     doc: unique ID of the contact
+    quantity: '?'
+  - name: shank_id
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: shank ID of the contact
     quantity: '?'
   - name: contact_plane_axes
     neurodata_type_inc: VectorData

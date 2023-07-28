@@ -25,7 +25,7 @@ def main():
     # TODO: define your new data types
     # see https://pynwb.readthedocs.io/en/latest/extensions.html#extending-nwb
     # for more information
-    contact = NWBGroupSpec(
+    contact_table = NWBGroupSpec(
         doc="Neural probe contacts according to probeinterface specification",
         datasets=[
             NWBDatasetSpec(
@@ -45,6 +45,13 @@ def main():
             NWBDatasetSpec(
                 name="contact_id",
                 doc="unique ID of the contact",
+                dtype="text",
+                neurodata_type_inc="VectorData",
+                quantity="?",
+            ),
+            NWBDatasetSpec(
+                name="shank_id",
+                doc="shank ID of the contact",
                 dtype="text",
                 neurodata_type_inc="VectorData",
                 quantity="?",
@@ -90,26 +97,6 @@ def main():
         neurodata_type_inc="DynamicTable",
         neurodata_type_def="ContactTable",
     )
-    shank = NWBGroupSpec(
-        doc="Neural probe shanks according to probeinterface specification",
-        attributes=[
-            NWBAttributeSpec(
-                name="shank_id",
-                doc="ID of the shank in the probe; must be a str",
-                dtype="text",
-                required=True,
-            ),
-        ],
-        groups=[
-            NWBGroupSpec(
-                doc="Neural probe contacts according to probeinterface specification",
-                neurodata_type_inc="ContactTable",
-                quantity=1,
-            )
-        ],
-        neurodata_type_inc="NWBContainer",
-        neurodata_type_def="Shank",
-    )
     probe = NWBGroupSpec(
         doc="Neural probe object according to probeinterface specification",
         attributes=[
@@ -138,9 +125,9 @@ def main():
         neurodata_type_def="Probe",
         groups=[
             NWBGroupSpec(
-                doc="Neural probe shank object according to probeinterface specification",
-                neurodata_type_inc="Shank",
-                quantity="*",
+                doc="Neural probe contacts according to probeinterface specification",
+                neurodata_type_inc="ContactTable",
+                quantity=1,
             )
         ],
         datasets=[
@@ -154,7 +141,7 @@ def main():
         ],
     )
 
-    new_data_types = [probe, shank, contact]
+    new_data_types = [probe, contact_table]
 
     # export the spec to yaml files in the spec folder
     output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "spec"))

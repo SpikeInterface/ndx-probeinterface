@@ -11,7 +11,7 @@ from pynwb.ecephys import ElectrodeGroup
 from pynwb.file import ElectrodeTable as get_electrode_table
 from pynwb.testing import TestCase, remove_test_file, AcquisitionH5IOMixin
 
-from ndx_probeinterface import Probe, Shank, ContactTable
+from ndx_probeinterface import Probe, ContactTable
 
 
 def set_up_nwbfile():
@@ -64,12 +64,8 @@ class TestProbeConstructors(TestCase):
         self.assertIsInstance(device, Device)
         self.assertIsInstance(device, Probe)
 
-        # assert correct attributes
-        self.assertEqual(len(device.shanks), 1)
-
         # properties
-        shank_names = list(device.shanks.keys())
-        contact_table = device.shanks[shank_names[0]].contact_table
+        contact_table = device.contact_table
         probe_array = probe.to_numpy()
         np.testing.assert_array_equal(contact_table["contact_position"][:], probe.contact_positions)
         np.testing.assert_array_equal(contact_table["contact_shape"][:], probe_array["contact_shapes"])
@@ -79,44 +75,36 @@ class TestProbeConstructors(TestCase):
         probe.set_device_channel_indices(device_channel_indices)
         devices_w_indices = Probe.from_probeinterface(probe)
         device_w_indices = devices_w_indices[0]
-        shank_names = list(device_w_indices.shanks.keys())
-        contact_table = device_w_indices.shanks[shank_names[0]].contact_table
+        contact_table = device_w_indices.contact_table
         np.testing.assert_array_equal(contact_table["device_channel_index_pi"][:], device_channel_indices)
 
     def test_constructor_from_probe_multi_shank(self):
         """Test that the constructor from Probe sets values as expected for multi-shank."""
 
         probe = self.probe1
+        probe_array = probe.to_numpy()
+
+        device_channel_indices = np.arange(probe.get_contact_count())
+        probe.set_device_channel_indices(device_channel_indices)
         devices = Probe.from_probeinterface(probe)
         device = devices[0]
         # assert correct objects
         self.assertIsInstance(device, Device)
         self.assertIsInstance(device, Probe)
 
-        # assert correct attributes
-        self.assertEqual(len(device.shanks), 2)
-
-        # properties
-        shank_names = list(device.shanks.keys())
-        probe_array = probe.to_numpy()
-
-        # set channel indices
-        device_channel_indices = np.arange(probe.get_contact_count())
-        probe.set_device_channel_indices(device_channel_indices)
-        devices_w_indices = Probe.from_probeinterface(probe)
-        device_w_indices = devices_w_indices[0]
-        for i_s, shank_name in enumerate(shank_names):
-            contact_table = device_w_indices.shanks[shank_name].contact_table
-            pi_shank = probe.get_shanks()[i_s]
-            np.testing.assert_array_equal(
-                contact_table["contact_position"][:], probe.contact_positions[pi_shank.get_indices()]
-            )
-            np.testing.assert_array_equal(
-                contact_table["contact_shape"][:], probe_array["contact_shapes"][pi_shank.get_indices()]
-            )
-            np.testing.assert_array_equal(
-                contact_table["device_channel_index_pi"][:], device_channel_indices[pi_shank.get_indices()]
-            )
+        contact_table = device.contact_table
+        np.testing.assert_array_equal(
+            contact_table["contact_position"][:], probe.contact_positions
+        )
+        np.testing.assert_array_equal(
+            contact_table["contact_shape"][:], probe_array["contact_shapes"]
+        )
+        np.testing.assert_array_equal(
+            contact_table["device_channel_index_pi"][:], device_channel_indices
+        )
+        np.testing.assert_array_equal(
+            contact_table["shank_id"][:], probe.shank_ids
+        )
 
     def test_constructor_from_probegroup(self):
         """Test that the constructor from probegroup sets values as expected."""
@@ -134,28 +122,22 @@ class TestProbeConstructors(TestCase):
             self.assertIsInstance(device, Device)
             self.assertIsInstance(device, Probe)
 
-            # assert correct attributes
-            self.assertEqual(len(device.shanks), shank_counts[i])
-
             # properties
-            shank_names = list(device.shanks.keys())
             probe_array = probe.to_numpy()
             # TODO fix
             device_channel_indices = probe.device_channel_indices
             # set channel indices
-            for i_s, shank_name in enumerate(shank_names):
-                contact_table = device.shanks[shank_name].contact_table
-                pi_shank = probe.get_shanks()[i_s]
-                np.testing.assert_array_equal(
-                    contact_table["contact_position"][:], probe.contact_positions[pi_shank.get_indices()]
-                )
-                np.testing.assert_array_equal(
-                    contact_table["contact_shape"][:], probe_array["contact_shapes"][pi_shank.get_indices()]
-                )
+            contact_table = device.contact_table
+            np.testing.assert_array_equal(
+                contact_table["contact_position"][:], probe.contact_positions
+            )
+            np.testing.assert_array_equal(
+                contact_table["contact_shape"][:], probe_array["contact_shapes"]
+            )
 
-                np.testing.assert_array_equal(
-                    contact_table["device_channel_index_pi"][:], device_channel_indices[pi_shank.get_indices()]
-                )
+            np.testing.assert_array_equal(
+                contact_table["device_channel_index_pi"][:], device_channel_indices
+            )
 
 
 class TestProbeRoundtrip(TestCase):
