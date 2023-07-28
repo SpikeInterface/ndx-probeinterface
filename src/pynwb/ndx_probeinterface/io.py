@@ -51,22 +51,22 @@ def from_probegroup(probegroup: ProbeGroup):
     return devices
 
 
-def to_probeinterface(ndx_probeinterface_probe) -> Probe:
+def to_probeinterface(ndx_probe) -> Probe:
     """
-    Construct a probeinterface.Probe from ndx-probeinterface Probe
+    Construct a probeinterface.Probe from ndx_probeinterface.Probe
 
     Parameters
     ----------
-    ndx_probeinterface_probe: ndx_probeinterface.Probe
+    ndx_probe: ndx_probeinterface.Probe
         ndx_probeinterface.Probe to convert to probeinterface.Probe
 
     Returns
     -------
     Probe: probeinterface.Probe
     """
-    ndim = ndx_probeinterface_probe.ndim
-    unit = inverted_unit_map[ndx_probeinterface_probe.unit]
-    polygon = ndx_probeinterface_probe.planar_contour
+    ndim = ndx_probe.ndim
+    unit = inverted_unit_map[ndx_probe.unit]
+    polygon = ndx_probe.planar_contour
 
     positions = []
     shapes = []
@@ -78,7 +78,7 @@ def to_probeinterface(ndx_probeinterface_probe) -> Probe:
     device_channel_indices = None
 
     possible_shape_keys = ["radius", "width", "height"]
-    for shank in ndx_probeinterface_probe.shanks.values():
+    for shank in ndx_probe.shanks.values():
         positions.append(shank.contact_table["contact_position"][:])
         shapes.append(shank.contact_table["contact_shape"][:])
         if "contact_id" in shank.contact_table.colnames:
