@@ -21,6 +21,24 @@ groups:
     default_value: micrometer
     doc: SI unit used to define the probe; e.g. 'meter'.
     required: false
+  datasets:
+  - name: planar_contour
+    dtype: float
+    dims:
+    - - num_points
+      - x
+    - - num_points
+      - x, y
+    - - num_points
+      - x, y, z
+    shape:
+    - - null
+      - 1
+    - - null
+      - 2
+    - - null
+      - 3
+    doc: The planar polygon that outlines the probe contour.
   groups:
   - neurodata_type_inc: Shank
     doc: Neural probe shank object according to probeinterface specification

@@ -1,10 +1,11 @@
 namespaces:
 - author:
   - Alessio Buccino
-  - Kyu Hyun Lee
+  - Kyu Hyun LeeGeeling Chau
   contact:
   - alessiop.buccino@gmail.com
   - kyuhyun9056@gmail.com
+  - gchau@caltech.edu
   doc: Extension for defining neural probes in the probeinterface format
   name: ndx-probeinterface
   schema:
