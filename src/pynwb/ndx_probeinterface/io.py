@@ -9,8 +9,6 @@ unit_map = {
 }
 inverted_unit_map = {v: k for k, v in unit_map.items()}
 
-shape_words = ["radius", "width", "width/height"]
-
 
 def from_probe(probe: Probe):
     """
