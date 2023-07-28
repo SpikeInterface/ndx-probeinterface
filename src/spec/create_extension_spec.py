@@ -14,7 +14,7 @@ def main():
         name="""ndx-probeinterface""",
         version="""0.1.0""",
         author=["Alessio Buccino",
-                "Kyu Hyun Lee"
+                "Kyu Hyun Lee",
                 "Geeling Chau"],
         contact=["alessiop.buccino@gmail.com",
                  "kyuhyun9056@gmail.com",
