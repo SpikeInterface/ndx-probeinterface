@@ -14,7 +14,7 @@ def main():
         name="""ndx-probeinterface""",
         version="""0.1.0""",
         author=["Alessio Buccino",
-                "Kyu Hyun Lee"
+                "Kyu Hyun Lee",
                 "Geeling Chau"],
         contact=["alessiop.buccino@gmail.com",
                  "kyuhyun9056@gmail.com",
@@ -139,6 +139,15 @@ def main():
                 neurodata_type_inc="Shank",
                 quantity="*"
             )
+        ],
+        datasets=[
+            NWBDatasetSpec(
+                name="planar_contour",
+                doc="The planar polygon that outlines the probe contour.",
+                dtype="float",
+                dims=[['num_points', 'x'], ['num_points', 'x, y'], ['num_points', 'x, y, z']],
+                shape=[[None,1], [None, 2], [None,3]],
+            )       
         ]
     )
 
