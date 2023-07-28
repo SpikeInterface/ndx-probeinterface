@@ -17,7 +17,6 @@ load_namespaces(ndx_probeinterface_specpath)
 # TODO: import your classes here or define your class using get_class to make
 # them accessible at the package level
 Probe = get_class("Probe", "ndx-probeinterface")
-Shank = get_class("Shank", "ndx-probeinterface")
 ContactTable = get_class("ContactTable", "ndx-probeinterface")
 
 
