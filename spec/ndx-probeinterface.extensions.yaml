@@ -57,14 +57,29 @@ groups:
   neurodata_type_inc: DynamicTable
   doc: Neural probe contacts according to probeinterface specification
   datasets:
-  - name: contact_id
+  - name: contact_position
     neurodata_type_inc: VectorData
-    dtype: text
-    doc: unique ID of the contact
+    dtype: float
+    dims:
+    - - num_contacts
+      - x, y
+    - - num_contacts
+      - x, y, z
+    shape:
+    - - null
+      - 2
+    - - null
+      - 3
+    doc: dimension of the probe
   - name: contact_shape
     neurodata_type_inc: VectorData
     dtype: text
     doc: shape of the contact; e.g. 'circle'
+  - name: contact_id
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: unique ID of the contact
+    quantity: '?'
   - name: contact_plane_axes
     neurodata_type_inc: VectorData
     dtype: float
@@ -83,21 +98,24 @@ groups:
       - 2
       - 3
     doc: dimension of the probe
-  - name: contact_position
+    quantity: '?'
+  - name: radius
     neurodata_type_inc: VectorData
     dtype: float
-    dims:
-    - - num_contacts
-      - x, y
-    - - num_contacts
-      - x, y, z
-    shape:
-    - - null
-      - 2
-    - - null
-      - 3
-    doc: dimension of the probe
-  - name: device_channel_index
+    doc: Radius of a circular contact
+    quantity: '?'
+  - name: width
+    neurodata_type_inc: VectorData
+    dtype: float
+    doc: Width of a rectangular or square contact
+    quantity: '?'
+  - name: height
+    neurodata_type_inc: VectorData
+    dtype: float
+    doc: Height of a rectangular contact
+    quantity: '?'
+  - name: device_channel_index_pi
     neurodata_type_inc: VectorData
     dtype: int
     doc: ID of the channel connected to the contact
+    quantity: '?'
