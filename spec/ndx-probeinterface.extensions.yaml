@@ -59,7 +59,7 @@ groups:
       - 2
     - - null
       - 3
-    doc: dimension of the probe
+    doc: position of the contact
   - name: contact_shape
     neurodata_type_inc: VectorData
     dtype: text
@@ -91,25 +91,25 @@ groups:
     - - null
       - 2
       - 3
-    doc: dimension of the probe
+    doc: the axes defining the contact plane
     quantity: '?'
   - name: radius
     neurodata_type_inc: VectorData
     dtype: float
-    doc: Radius of a circular contact
+    doc: radius of a circular contact
     quantity: '?'
   - name: width
     neurodata_type_inc: VectorData
     dtype: float
-    doc: Width of a rectangular or square contact
+    doc: width of a rectangular or square contact
     quantity: '?'
   - name: height
     neurodata_type_inc: VectorData
     dtype: float
-    doc: Height of a rectangular contact
+    doc: height of a rectangular contact
     quantity: '?'
   - name: device_channel_index_pi
     neurodata_type_inc: VectorData
     dtype: int
-    doc: ID of the channel connected to the contact
+    doc: index of the channel connected to the contact
     quantity: '?'
