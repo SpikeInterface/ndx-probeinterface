@@ -104,6 +104,7 @@ def _single_probe_to_nwb_device(probe: Probe):
     contact_ids = probe.contact_ids
     contacts_arr = probe.to_numpy()
     shank_ids = probe.shank_ids
+    planar_contour = probe.probe_planar_contour
 
     if shank_ids is not None:
         unique_shanks = np.unique(shank_ids)
@@ -181,6 +182,7 @@ def _single_probe_to_nwb_device(probe: Probe):
         manufacturer=manufacturer,
         ndim=probe.ndim,
         unit=unit_map[probe.si_units],
+        planar_contour=planar_contour
     )
 
     return probe_device
