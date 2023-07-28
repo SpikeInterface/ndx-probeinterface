@@ -68,23 +68,30 @@ def to_probeinterface(ndx_probeinterface_Probe)->Probe:
     polygon = ndx_probeinterface_Probe.planar_contour
     
     positions = []
+    contact_ids = []
     shapes = []
     shape_params = []
     shank_ids = []
     plane_axes = []
+    channel_indices = []
     for shank in ndx_probeinterface_Probe.shanks.values():
         positions.append(shank.contact_table['contact_position'][:])
+        contact_ids.append(shank.contact_table['contact_id'][:])
         shapes.append(shank.contact_table['contact_shape'][:])
+        channel_indices.append(shank.contact_table['device_channel_index'][:])
         shank_ids.append([int(shank.shank_id)] * len(shank.contact_table))
         plane_axes.append(shank.contact_table['contact_plane_axes'][:])
         # WARNING: currently assumes that all the contacts have the same shape
         shape_word = [shape for shape in shape_words if shape in shank.contact_table[:].columns][0]
         shape_params.append([{shape_word: val} for val in shank.contact_table[shape_word][:]])
 
+    
     positions = [item for sublist in positions for item in sublist]
+    contact_ids = [item for sublist in contact_ids for item in sublist]
     shapes = [item for sublist in shapes for item in sublist]
     plane_axes = [item for sublist in plane_axes for item in sublist]
     shank_ids = [item for sublist in shank_ids for item in sublist]
+    channel_indices = [item for sublist in channel_indices for item in sublist]
 
     probeinterface_Probe = Probe(ndim=ndim, si_units=unit)
     probeinterface_Probe.set_contacts(positions=positions,
@@ -92,6 +99,9 @@ def to_probeinterface(ndx_probeinterface_Probe)->Probe:
                                       shape_params=shape_params,
                                       plane_axes=plane_axes,
                                       shank_ids=shank_ids)
+    probeinterface_Probe.set_contact_ids(contact_ids=contact_ids)
+    probeinterface_Probe.set_device_channel_indices(channel_indices=channel_indices)
+
     probeinterface_Probe.set_planar_contour(polygon)
 
     return probeinterface_Probe
