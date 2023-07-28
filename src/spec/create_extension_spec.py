@@ -36,21 +36,15 @@ def main():
         doc="Neural probe contacts according to probeinterface specification",
         datasets=[
             NWBDatasetSpec(
-                name="contact_ids",
+                name="contact_id",
                 doc="unique ID of the contact",
                 dtype="text",
                 neurodata_type_inc="VectorData"
             ),
             NWBDatasetSpec(
-                name="contact_shapes",
+                name="contact_shape",
                 doc="shape of the contact; e.g. 'circle'",
                 dtype="text",
-                neurodata_type_inc="VectorData"
-            ),
-            NWBDatasetSpec(
-                name="contact_shape_params",
-                doc="size of the contact; e.g. if the contact is circular and has radius of 10um, put '10'",
-                dtype="float",
                 neurodata_type_inc="VectorData"
             ),
             NWBDatasetSpec(
@@ -62,7 +56,7 @@ def main():
                 neurodata_type_inc="VectorData"
             ),
             NWBDatasetSpec(
-                name="contact_positions",
+                name="contact_position",
                 doc="dimension of the probe",
                 dtype="float",
                 dims=[['num_contacts', 'x, y'], ['num_contacts','x, y, z']],
@@ -70,22 +64,16 @@ def main():
                 neurodata_type_inc="VectorData"
             ),
             NWBDatasetSpec(
-                name="contact_annotations",
-                doc="annotation of the contact",
-                dtype="text",
-                neurodata_type_inc="VectorData"
-            ),
-            NWBDatasetSpec(
-                name="device_channel_indices",
+                name="device_channel_index",
                 doc="ID of the channel connected to the contact",
                 dtype="int",
                 neurodata_type_inc="VectorData"
             ),
-            NWBDatasetSpec(
-                name="electrode",
-                doc="electrode ID in ElectrodeTable; should link to ElectrodeTable",
-                neurodata_type_inc="DynamicTableRegion"
-            ),
+            # NWBDatasetSpec(
+            #     name="electrode",
+            #     doc="electrode ID in ElectrodeTable; should link to ElectrodeTable",
+            #     neurodata_type_inc="DynamicTableRegion"
+            # ),
         ],
         neurodata_type_inc="DynamicTable",
         neurodata_type_def="ContactTable",
@@ -94,9 +82,9 @@ def main():
         doc="Neural probe shanks according to probeinterface specification",
         attributes=[
             NWBAttributeSpec(
-                name="shank id",
-                doc="ID of the shank in the probe; must be an integer",
-                dtype="int",
+                name="shank_id",
+                doc="ID of the shank in the probe; must be a str",
+                dtype="text",
                 required=True,
             ),
         ],
@@ -121,36 +109,23 @@ def main():
                 default_value=2
             ),
             NWBAttributeSpec(
-                name="type",
-                doc="type of the probe; e.g. 'silicon probe', 'microwire tetrodes', etc.",
-                dtype="text",
-                required=True,
-            ),
-            NWBAttributeSpec(
-                name="model",
+                name="model_name",
                 doc="model of the probe; e.g. 'Neuropixels 1.0'",
                 dtype="text",
-                required=True,
+                required=False,
             ),
             NWBAttributeSpec(
-                name="serial number",
+                name="serial_number",
                 doc="serial number of the probe",
                 dtype="text",
-                required=True,
+                required=False,
             ),
             NWBAttributeSpec(
                 name="unit",
                 doc="SI unit used to define the probe; e.g. 'meter'.",
                 dtype="text",
                 required=True,
-                default_value='meter'
-            ),
-            NWBAttributeSpec(
-                name="conversion",
-                doc="Scalar to multiply each parameter to convert to the specified unit; e.g. 1e-6.",
-                dtype="float",
-                required=True,
-                default_value=1e-6
+                default_value='micrometer'
             ),
         ],
         neurodata_type_inc="Device",
