@@ -1,9 +1,11 @@
 # ndx-probeinterface Extension for NWB
 
-Description of the extension
+`ndx-probeinterface` is an extension of the NWB format to formally define information about neural probes as data types in NWB files. It comes with helper functions to easily construct `ndx-probeinterface.Probe` from `probeinterface.Probe` and vice versa.
 
 ## Installation
-
+```python
+pip install ndx_probeinterface
+```
 
 ## Usage
 
