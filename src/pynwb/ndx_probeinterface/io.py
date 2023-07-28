@@ -2,12 +2,15 @@ from typing import Union, List, Optional
 import numpy as np
 from probeinterface import Probe, ProbeGroup
 
-
 unit_map = {
     "um": "micrometer",
     "mm": "millimeter",
     "m": "meter",
 }
+inverted_unit_map = {v: k for k, v in unit_map.items()}
+
+shape_words = ["radius", "width", "width/height"]
+
 
 def from_probe(probe: Probe):
     """
@@ -17,10 +20,10 @@ def from_probe(probe: Probe):
     ----------
     probe_or_probegroup: Probe or ProbeGroup
         Probe or ProbeGroup to convert to ndx-probeinterface Probe devices
-    
+
     Returns
     -------
-    devices: ndx_probeinterface.Probe 
+    devices: ndx_probeinterface.Probe
         The ndx-probeinterface Probe device
     """
     assert isinstance(probe, Probe)
@@ -48,24 +51,74 @@ def from_probegroup(probegroup: ProbeGroup):
     return devices
 
 
-def to_probeinterface():
+def to_probeinterface(ndx_probeinterface_probe) -> Probe:
     """
+    Construct a probeinterface.Probe from ndx-probeinterface Probe
+
+    Parameters
+    ----------
+    ndx_probeinterface_probe: ndx_probeinterface.Probe
+        ndx_probeinterface.Probe to convert to probeinterface.Probe
+
+    Returns
+    -------
+    Probe: probeinterface.Probe
     """
-    pass
+    ndim = ndx_probeinterface_probe.ndim
+    unit = inverted_unit_map[ndx_probeinterface_probe.unit]
+    polygon = ndx_probeinterface_probe.planar_contour
+
+    positions = []
+    contact_ids = []
+    shapes = []
+    shape_params = []
+    shank_ids = []
+    plane_axes = []
+    channel_indices = []
+    for shank in ndx_probeinterface_probe.shanks.values():
+        positions.append(shank.contact_table["contact_position"][:])
+        contact_ids.append(shank.contact_table["contact_id"][:])
+        shapes.append(shank.contact_table["contact_shape"][:])
+        channel_indices.append(shank.contact_table["device_channel_index_pi"][:])
+        plane_axes.append(shank.contact_table["contact_plane_axes"][:])
+        shank_ids.append([int(shank.shank_id)] * len(shank.contact_table))
+        # WARNING: currently assumes that all the contacts have the same shape
+        shape_word = [shape for shape in shape_words if shape in shank.contact_table[:].columns][0]
+        shape_params.append([{shape_word: val} for val in shank.contact_table[shape_word][:]])
+
+    positions = [item for sublist in positions for item in sublist]
+    contact_ids = [item for sublist in contact_ids for item in sublist]
+    shapes = [item for sublist in shapes for item in sublist]
+    plane_axes = [item for sublist in plane_axes for item in sublist]
+    shank_ids = [item for sublist in shank_ids for item in sublist]
+    channel_indices = [item for sublist in channel_indices for item in sublist]
+    shape_params = [item for sublist in shape_params for item in sublist]
+
+    probeinterface_probe = Probe(ndim=ndim, si_units=unit)
+    probeinterface_probe.set_contacts(
+        positions=positions, shapes=shapes, shape_params=shape_params, plane_axes=plane_axes, shank_ids=shank_ids
+    )
+    probeinterface_probe.set_contact_ids(contact_ids=contact_ids)
+    probeinterface_probe.set_device_channel_indices(channel_indices=channel_indices)
+
+    probeinterface_probe.set_planar_contour(polygon)
+
+    return probeinterface_probe
 
 
 def _single_probe_to_nwb_device(probe: Probe):
     from pynwb import load_namespaces, get_class
 
-    Probe = get_class('Probe', 'ndx-probeinterface')
-    Shank = get_class('Shank', 'ndx-probeinterface')
-    ContactTable = get_class('ContactTable', 'ndx-probeinterface')
+    Probe = get_class("Probe", "ndx-probeinterface")
+    Shank = get_class("Shank", "ndx-probeinterface")
+    ContactTable = get_class("ContactTable", "ndx-probeinterface")
 
     contact_positions = probe.contact_positions
     contact_plane_axes = probe.contact_plane_axes
     contact_ids = probe.contact_ids
     contacts_arr = probe.to_numpy()
     shank_ids = probe.shank_ids
+    planar_contour = probe.probe_planar_contour
 
     if shank_ids is not None:
         unique_shanks = np.unique(shank_ids)
@@ -96,13 +149,6 @@ def _single_probe_to_nwb_device(probe: Probe):
             name="ContactTable",
             description="Contact Table for ProbeInterface",
         )
-        
-        if probe.device_channel_indices is not None:
-            contact_table.add_column(name="device_channel_index", 
-                                     description="Device channel index")
-        for k in shape_keys:
-            contact_table.add_column(name=k, 
-                                     description="Shape parameter for electrode")
 
         for index in shank_indices:
             kwargs = dict(
@@ -114,12 +160,10 @@ def _single_probe_to_nwb_device(probe: Probe):
             for k in shape_keys:
                 kwargs[k] = contacts_arr[k][index]
             if probe.device_channel_indices is not None:
-                kwargs["device_channel_index"] = probe.device_channel_indices[index]
+                kwargs["device_channel_index_pi"] = probe.device_channel_indices[index]
             contact_table.add_row(kwargs)
         contact_tables.append(contact_table)
-        shank = Shank(name=shank_name,
-                      shank_id=shank_id,
-                      contact_table=contact_table)
+        shank = Shank(name=shank_name, shank_id=shank_id, contact_table=contact_table)
         shanks.append(shank)
 
     if "serial_number" in probe.annotations:
@@ -143,6 +187,7 @@ def _single_probe_to_nwb_device(probe: Probe):
         manufacturer=manufacturer,
         ndim=probe.ndim,
         unit=unit_map[probe.si_units],
+        planar_contour=planar_contour,
     )
 
     return probe_device

@@ -10,8 +10,8 @@ def main():
         doc="""Extension for defining neural probes in the probeinterface format""",
         name="""ndx-probeinterface""",
         version="""0.1.0""",
-        author=["Alessio Buccino", "Kyu Hyun Lee"],
-        contact=["alessiop.buccino@gmail.com", "kyuhyun9056@gmail.com"],
+        author=["Alessio Buccino", "Kyu Hyun Lee", "Geeling Chau"],
+        contact=["alessiop.buccino@gmail.com", "kyuhyun9056@gmail.com", "gchau@caltech.edu"],
     )
 
     # TODO: specify the neurodata_types that are used by the extension as well
@@ -29,19 +29,25 @@ def main():
         doc="Neural probe contacts according to probeinterface specification",
         datasets=[
             NWBDatasetSpec(
-                name="contact_ids", doc="unique ID of the contact", dtype="text", neurodata_type_inc="VectorData"
+                name="contact_position",
+                doc="dimension of the probe",
+                dtype="float",
+                dims=[["num_contacts", "x, y"], ["num_contacts", "x, y, z"]],
+                shape=[[None, 2], [None, 3]],
+                neurodata_type_inc="VectorData",
             ),
             NWBDatasetSpec(
-                name="contact_shapes",
+                name="contact_shape",
                 doc="shape of the contact; e.g. 'circle'",
                 dtype="text",
                 neurodata_type_inc="VectorData",
             ),
             NWBDatasetSpec(
-                name="contact_shape_params",
-                doc="size of the contact; e.g. if the contact is circular and has radius of 10um, put '10'",
-                dtype="float",
+                name="contact_id",
+                doc="unique ID of the contact",
+                dtype="text",
                 neurodata_type_inc="VectorData",
+                quantity="?",
             ),
             NWBDatasetSpec(
                 name="contact_plane_axes",
@@ -50,31 +56,35 @@ def main():
                 dims=[["num_contacts", "v1, v2", "x,y"], ["num_contacts", "v1,v2", "x, y, z"]],
                 shape=[[None, 2, 2], [None, 2, 3]],
                 neurodata_type_inc="VectorData",
+                quantity="?",
             ),
             NWBDatasetSpec(
-                name="contact_positions",
-                doc="dimension of the probe",
+                name="radius",
+                doc="Radius of a circular contact",
                 dtype="float",
-                dims=[["num_contacts", "x, y"], ["num_contacts", "x, y, z"]],
-                shape=[[None, 2], [None, 3]],
                 neurodata_type_inc="VectorData",
+                quantity="?",
             ),
             NWBDatasetSpec(
-                name="contact_annotations",
-                doc="annotation of the contact",
-                dtype="text",
+                name="width",
+                doc="Width of a rectangular or square contact",
+                dtype="float",
                 neurodata_type_inc="VectorData",
+                quantity="?",
             ),
             NWBDatasetSpec(
-                name="device_channel_indices",
+                name="height",
+                doc="Height of a rectangular contact",
+                dtype="float",
+                neurodata_type_inc="VectorData",
+                quantity="?",
+            ),
+            NWBDatasetSpec(
+                name="device_channel_index_pi",
                 doc="ID of the channel connected to the contact",
                 dtype="int",
                 neurodata_type_inc="VectorData",
-            ),
-            NWBDatasetSpec(
-                name="electrode",
-                doc="electrode ID in ElectrodeTable; should link to ElectrodeTable",
-                neurodata_type_inc="DynamicTableRegion",
+                quantity="?",
             ),
         ],
         neurodata_type_inc="DynamicTable",
@@ -84,9 +94,9 @@ def main():
         doc="Neural probe shanks according to probeinterface specification",
         attributes=[
             NWBAttributeSpec(
-                name="shank id",
-                doc="ID of the shank in the probe; must be an integer",
-                dtype="int",
+                name="shank_id",
+                doc="ID of the shank in the probe; must be a str",
+                dtype="text",
                 required=True,
             ),
         ],
@@ -105,36 +115,23 @@ def main():
         attributes=[
             NWBAttributeSpec(name="ndim", doc="dimension of the probe", dtype="int", required=True, default_value=2),
             NWBAttributeSpec(
-                name="type",
-                doc="type of the probe; e.g. 'silicon probe', 'microwire tetrodes', etc.",
-                dtype="text",
-                required=True,
-            ),
-            NWBAttributeSpec(
-                name="model",
+                name="model_name",
                 doc="model of the probe; e.g. 'Neuropixels 1.0'",
                 dtype="text",
-                required=True,
+                required=False,
             ),
             NWBAttributeSpec(
-                name="serial number",
+                name="serial_number",
                 doc="serial number of the probe",
                 dtype="text",
-                required=True,
+                required=False,
             ),
             NWBAttributeSpec(
                 name="unit",
                 doc="SI unit used to define the probe; e.g. 'meter'.",
                 dtype="text",
                 required=True,
-                default_value="meter",
-            ),
-            NWBAttributeSpec(
-                name="conversion",
-                doc="Scalar to multiply each parameter to convert to the specified unit; e.g. 1e-6.",
-                dtype="float",
-                required=True,
-                default_value=1e-6,
+                default_value="micrometer",
             ),
         ],
         neurodata_type_inc="Device",
@@ -144,6 +141,15 @@ def main():
                 doc="Neural probe shank object according to probeinterface specification",
                 neurodata_type_inc="Shank",
                 quantity="*",
+            )
+        ],
+        datasets=[
+            NWBDatasetSpec(
+                name="planar_contour",
+                doc="The planar polygon that outlines the probe contour.",
+                dtype="float",
+                dims=[["num_points", "x"], ["num_points", "x, y"], ["num_points", "x, y, z"]],
+                shape=[[None, 1], [None, 2], [None, 3]],
             )
         ],
     )
