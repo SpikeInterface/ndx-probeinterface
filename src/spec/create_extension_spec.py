@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 import os.path
 
-from pynwb.spec import (NWBNamespaceBuilder,
-                        export_spec,
-                        NWBGroupSpec,
-                        NWBAttributeSpec,
-                        NWBDatasetSpec)
+from pynwb.spec import NWBNamespaceBuilder, export_spec, NWBGroupSpec, NWBAttributeSpec, NWBDatasetSpec
+
 
 def main():
     # these arguments were auto-generated from your cookiecutter inputs
@@ -14,8 +11,7 @@ def main():
         name="""ndx-probeinterface""",
         version="""0.1.0""",
         author=["Alessio Buccino", "Kyu Hyun Lee"],
-        contact=["alessiop.buccino@gmail.com",
-                 "kyuhyun9056@gmail.com"]
+        contact=["alessiop.buccino@gmail.com", "kyuhyun9056@gmail.com"],
     )
 
     # TODO: specify the neurodata_types that are used by the extension as well
@@ -24,11 +20,8 @@ def main():
     # to use your new data types.
     # all types included or used by the types specified here will also be
     # included.
-    ns_builder.include_type(
-        data_type="Device",
-        namespace="core"
-    )
-    ns_builder.include_namespace('hdmf-common')
+    ns_builder.include_type(data_type="Device", namespace="core")
+    ns_builder.include_namespace("hdmf-common")
     # TODO: define your new data types
     # see https://pynwb.readthedocs.io/en/latest/extensions.html#extending-nwb
     # for more information
@@ -36,55 +29,52 @@ def main():
         doc="Neural probe contacts according to probeinterface specification",
         datasets=[
             NWBDatasetSpec(
-                name="contact_ids",
-                doc="unique ID of the contact",
-                dtype="text",
-                neurodata_type_inc="VectorData"
+                name="contact_ids", doc="unique ID of the contact", dtype="text", neurodata_type_inc="VectorData"
             ),
             NWBDatasetSpec(
                 name="contact_shapes",
                 doc="shape of the contact; e.g. 'circle'",
                 dtype="text",
-                neurodata_type_inc="VectorData"
+                neurodata_type_inc="VectorData",
             ),
             NWBDatasetSpec(
                 name="contact_shape_params",
                 doc="size of the contact; e.g. if the contact is circular and has radius of 10um, put '10'",
                 dtype="float",
-                neurodata_type_inc="VectorData"
+                neurodata_type_inc="VectorData",
             ),
             NWBDatasetSpec(
                 name="contact_plane_axes",
                 doc="dimension of the probe",
                 dtype="float",
-                dims=[['num_contacts', 'v1, v2', 'x,y'], ['num_contacts', 'v1,v2', 'x, y, z']],
-                shape=[[None, 2, 2], [None, 2,3]],
-                neurodata_type_inc="VectorData"
+                dims=[["num_contacts", "v1, v2", "x,y"], ["num_contacts", "v1,v2", "x, y, z"]],
+                shape=[[None, 2, 2], [None, 2, 3]],
+                neurodata_type_inc="VectorData",
             ),
             NWBDatasetSpec(
                 name="contact_positions",
                 doc="dimension of the probe",
                 dtype="float",
-                dims=[['num_contacts', 'x, y'], ['num_contacts','x, y, z']],
+                dims=[["num_contacts", "x, y"], ["num_contacts", "x, y, z"]],
                 shape=[[None, 2], [None, 3]],
-                neurodata_type_inc="VectorData"
+                neurodata_type_inc="VectorData",
             ),
             NWBDatasetSpec(
                 name="contact_annotations",
                 doc="annotation of the contact",
                 dtype="text",
-                neurodata_type_inc="VectorData"
+                neurodata_type_inc="VectorData",
             ),
             NWBDatasetSpec(
                 name="device_channel_indices",
                 doc="ID of the channel connected to the contact",
                 dtype="int",
-                neurodata_type_inc="VectorData"
+                neurodata_type_inc="VectorData",
             ),
             NWBDatasetSpec(
                 name="electrode",
                 doc="electrode ID in ElectrodeTable; should link to ElectrodeTable",
-                neurodata_type_inc="DynamicTableRegion"
+                neurodata_type_inc="DynamicTableRegion",
             ),
         ],
         neurodata_type_inc="DynamicTable",
@@ -104,7 +94,7 @@ def main():
             NWBGroupSpec(
                 doc="Neural probe contacts according to probeinterface specification",
                 neurodata_type_inc="ContactTable",
-                quantity=1
+                quantity=1,
             )
         ],
         neurodata_type_inc="NWBContainer",
@@ -113,13 +103,7 @@ def main():
     probe = NWBGroupSpec(
         doc="Neural probe object according to probeinterface specification",
         attributes=[
-            NWBAttributeSpec(
-                name="ndim",
-                doc="dimension of the probe",
-                dtype="int",
-                required=True,
-                default_value=2
-            ),
+            NWBAttributeSpec(name="ndim", doc="dimension of the probe", dtype="int", required=True, default_value=2),
             NWBAttributeSpec(
                 name="type",
                 doc="type of the probe; e.g. 'silicon probe', 'microwire tetrodes', etc.",
@@ -143,14 +127,14 @@ def main():
                 doc="SI unit used to define the probe; e.g. 'meter'.",
                 dtype="text",
                 required=True,
-                default_value='meter'
+                default_value="meter",
             ),
             NWBAttributeSpec(
                 name="conversion",
                 doc="Scalar to multiply each parameter to convert to the specified unit; e.g. 1e-6.",
                 dtype="float",
                 required=True,
-                default_value=1e-6
+                default_value=1e-6,
             ),
         ],
         neurodata_type_inc="Device",
@@ -159,19 +143,19 @@ def main():
             NWBGroupSpec(
                 doc="Neural probe shank object according to probeinterface specification",
                 neurodata_type_inc="Shank",
-                quantity="*"
+                quantity="*",
             )
-        ]
+        ],
     )
 
     new_data_types = [probe, shank, contact]
 
     # export the spec to yaml files in the spec folder
-    output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'spec'))
+    output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "spec"))
     export_spec(ns_builder, new_data_types, output_dir)
-    print('Spec files generated. Please make sure to rerun `pip install .` to load the changes.')
+    print("Spec files generated. Please make sure to rerun `pip install .` to load the changes.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # usage: python create_extension_spec.py
     main()
