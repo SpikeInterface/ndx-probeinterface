@@ -1,7 +1,7 @@
 import os
 from pynwb import load_namespaces, get_class
 
-from .constructors import from_probe, from_probegroup
+from .io import from_probe, from_probegroup
 
 # Set path of the namespace.yaml file to the expected install location
 ndx_probeinterface_specpath = os.path.join(
