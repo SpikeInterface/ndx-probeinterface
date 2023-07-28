@@ -13,9 +13,12 @@ def main():
         doc="""Extension for defining neural probes in the probeinterface format""",
         name="""ndx-probeinterface""",
         version="""0.1.0""",
-        author=["Alessio Buccino", "Kyu Hyun Lee"],
+        author=["Alessio Buccino",
+                "Kyu Hyun Lee"
+                "Geeling Chau"],
         contact=["alessiop.buccino@gmail.com",
-                 "kyuhyun9056@gmail.com"]
+                 "kyuhyun9056@gmail.com",
+                 "gchau@caltech.edu"]
     )
 
     # TODO: specify the neurodata_types that are used by the extension as well
