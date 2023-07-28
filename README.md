@@ -18,7 +18,7 @@ pi_probegroup = probeinterface.ProbeGroup()
 
 # from_probeinterface always returns a list of ndx_probeinterface.Probe devices
 ndx_probes1 = ndx_probeinterface.from_probeinterface(pi_probe)
-ndx_probes2 = ndx_probeinterface.from_probeinterface(pi_probe)
+ndx_probes2 = ndx_probeinterface.from_probeinterface(pi_probegroup)
 
 ndx_probes = ndx_probes1.extend(ndx_probes2)
 

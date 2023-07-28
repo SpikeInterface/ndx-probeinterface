@@ -25,7 +25,7 @@ def from_probeinterface(probe_or_probegroup: Union[Probe, ProbeGroup]) -> List[D
     devices: list
         The list of ndx-probeinterface Probe devices
     """
-    assert isinstance(probe_or_probegroup, (Probe, ProbeGroup)), f"The input can be a Probe or ProbeGroup, not {type(probe_or_probegroup)}"
+    assert isinstance(probe_or_probegroup, (Probe, ProbeGroup)), f"The input must be a Probe or ProbeGroup, not {type(probe_or_probegroup)}"
     if isinstance(probe_or_probegroup, Probe):
         probes = [probe_or_probegroup]
     else:
