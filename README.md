@@ -9,7 +9,7 @@ pip install ndx_probeinterface
 
 ## Usage
 
-### Going from a `probeinterface.Probe`/``ProbeGroup` object to a `ndx_probeinterface.Probe` object 
+### Going from a `probeinterface.Probe`/`ProbeGroup` object to a `ndx_probeinterface.Probe` object 
 ```python
 import ndx_probeinterface
 
