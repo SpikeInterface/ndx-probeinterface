@@ -102,7 +102,7 @@ def to_probeinterface(ndx_probe) -> Probe:
     if shank_ids is not None:
         shank_ids = [item for sublist in shank_ids for item in sublist]
     if device_channel_indices is not None:
-        device_channel_indices = [item for sublist in channel_indices for item in sublist]
+        device_channel_indices = [item for sublist in device_channel_indices for item in sublist]
 
     probeinterface_probe = Probe(ndim=ndim, si_units=unit)
     probeinterface_probe.set_contacts(
