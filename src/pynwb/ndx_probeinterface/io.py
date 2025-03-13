@@ -53,6 +53,11 @@ def to_probeinterface(ndx_probe) -> Probe:
     """
     ndim = ndx_probe.ndim
     unit = inverted_unit_map[ndx_probe.unit]
+    name = ndx_probe.name
+    serial_number = ndx_probe.serial_number
+    model_name = ndx_probe.model_name
+    manufacturer = ndx_probe.manufacturer
+    
     polygon = ndx_probe.planar_contour
 
     positions = []
@@ -105,7 +110,14 @@ def to_probeinterface(ndx_probe) -> Probe:
     if device_channel_indices is not None:
         device_channel_indices = [item for sublist in device_channel_indices for item in sublist]
 
-    probeinterface_probe = Probe(ndim=ndim, si_units=unit)
+    probeinterface_probe = Probe(
+        ndim=ndim,
+        si_units=unit,
+        name=name,
+        serial_number=serial_number,
+        manufacturer=manufacturer,
+        model_name=model_name
+    )
     probeinterface_probe.set_contacts(
         positions=positions, shapes=shapes, shape_params=shape_params, plane_axes=plane_axes, shank_ids=shank_ids
     )
