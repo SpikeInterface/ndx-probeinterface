@@ -1,5 +1,6 @@
 from typing import Union, List, Optional
 import numpy as np
+import json
 from probeinterface import Probe, ProbeGroup
 from pynwb.file import Device
 
@@ -11,8 +12,7 @@ unit_map = {
 inverted_unit_map = {v: k for k, v in unit_map.items()}
 
 
-def from_probeinterface(probe_or_probegroup: Union[Probe, ProbeGroup],
-                        name: Optional[str] = None) -> List[Device]:
+def from_probeinterface(probe_or_probegroup: Union[Probe, ProbeGroup]) -> List[Device]:
     """
     Construct ndx-probeinterface Probe devices from a probeinterface.Probe
 
@@ -33,7 +33,7 @@ def from_probeinterface(probe_or_probegroup: Union[Probe, ProbeGroup],
         probes = probe_or_probegroup.probes
     devices = []
     for probe in probes:
-        devices.append(_single_probe_to_nwb_device(probe, name=name))
+        devices.append(_single_probe_to_nwb_device(probe))
     return devices
 
 
@@ -53,6 +53,11 @@ def to_probeinterface(ndx_probe) -> Probe:
     """
     ndim = ndx_probe.ndim
     unit = inverted_unit_map[ndx_probe.unit]
+    name = ndx_probe.name
+    serial_number = ndx_probe.serial_number
+    model_name = ndx_probe.model_name
+    manufacturer = ndx_probe.manufacturer
+    
     polygon = ndx_probe.planar_contour
 
     positions = []
@@ -105,7 +110,14 @@ def to_probeinterface(ndx_probe) -> Probe:
     if device_channel_indices is not None:
         device_channel_indices = [item for sublist in device_channel_indices for item in sublist]
 
-    probeinterface_probe = Probe(ndim=ndim, si_units=unit)
+    probeinterface_probe = Probe(
+        ndim=ndim,
+        si_units=unit,
+        name=name,
+        serial_number=serial_number,
+        manufacturer=manufacturer,
+        model_name=model_name
+    )
     probeinterface_probe.set_contacts(
         positions=positions, shapes=shapes, shape_params=shape_params, plane_axes=plane_axes, shank_ids=shank_ids
     )
@@ -113,11 +125,12 @@ def to_probeinterface(ndx_probe) -> Probe:
     if device_channel_indices is not None:
         probeinterface_probe.set_device_channel_indices(channel_indices=device_channel_indices)
     probeinterface_probe.set_planar_contour(polygon)
+    probeinterface_probe.annotate(**json.loads(ndx_probe.annotations))
 
     return probeinterface_probe
 
 
-def _single_probe_to_nwb_device(probe: Probe, name: Optional[str]=None):
+def _single_probe_to_nwb_device(probe: Probe):
     from pynwb import get_class
 
     Probe = get_class("Probe", "ndx-probeinterface")
@@ -156,10 +169,11 @@ def _single_probe_to_nwb_device(probe: Probe, name: Optional[str]=None):
             kwargs["shank_id"] = probe.shank_ids[index]
         contact_table.add_row(kwargs)
 
-    serial_number = probe.serial_number
-    model_name = probe.model_name
-    manufacturer = probe.manufacturer
-    name = name if name is not None else probe.name
+    annotations = probe.annotations.copy()
+    name = annotations.pop("name") if "name" in annotations else None
+    serial_number = annotations.pop("serial_number") if "serial_number" in annotations else None
+    model_name = annotations.pop("model_name") if "model_name" in annotations else None
+    manufacturer = annotations.pop("manufacturer") if "manufacturer" in annotations else None
 
     probe_device = Probe(
         name=name,
@@ -169,7 +183,8 @@ def _single_probe_to_nwb_device(probe: Probe, name: Optional[str]=None):
         ndim=probe.ndim,
         unit=unit_map[probe.si_units],
         planar_contour=planar_contour,
-        contact_table=contact_table
+        contact_table=contact_table,
+        annotations=json.dumps(annotations)
     )
 
     return probe_device
