@@ -1,4 +1,4 @@
 # pinned dependencies to reproduce a working development environment
 hdmf>=3.1.1
 pynwb>=2.0.0
-probeinterface>=0.2.17
+probeinterface>=0.2.18

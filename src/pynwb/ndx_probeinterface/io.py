@@ -11,7 +11,8 @@ unit_map = {
 inverted_unit_map = {v: k for k, v in unit_map.items()}
 
 
-def from_probeinterface(probe_or_probegroup: Union[Probe, ProbeGroup]) -> List[Device]:
+def from_probeinterface(probe_or_probegroup: Union[Probe, ProbeGroup],
+                        name: Optional[str] = None) -> List[Device]:
     """
     Construct ndx-probeinterface Probe devices from a probeinterface.Probe
 
@@ -32,7 +33,7 @@ def from_probeinterface(probe_or_probegroup: Union[Probe, ProbeGroup]) -> List[D
         probes = probe_or_probegroup.probes
     devices = []
     for probe in probes:
-        devices.append(_single_probe_to_nwb_device(probe))
+        devices.append(_single_probe_to_nwb_device(probe, name=name))
     return devices
 
 
@@ -116,8 +117,8 @@ def to_probeinterface(ndx_probe) -> Probe:
     return probeinterface_probe
 
 
-def _single_probe_to_nwb_device(probe: Probe):
-    from pynwb import load_namespaces, get_class
+def _single_probe_to_nwb_device(probe: Probe, name: Optional[str]=None):
+    from pynwb import get_class
 
     Probe = get_class("Probe", "ndx-probeinterface")
     ContactTable = get_class("ContactTable", "ndx-probeinterface")
@@ -126,13 +127,7 @@ def _single_probe_to_nwb_device(probe: Probe):
     contact_plane_axes = probe.contact_plane_axes
     contact_ids = probe.contact_ids
     contacts_arr = probe.to_numpy()
-    shank_ids = probe.shank_ids
     planar_contour = probe.probe_planar_contour
-
-    if shank_ids is not None:
-        unique_shanks = np.unique(shank_ids)
-    else:
-        unique_shanks = ["0"]
 
     shape_keys = []
     for shape_params in probe.contact_shape_params:
@@ -161,21 +156,13 @@ def _single_probe_to_nwb_device(probe: Probe):
             kwargs["shank_id"] = probe.shank_ids[index]
         contact_table.add_row(kwargs)
 
-    if "serial_number" in probe.annotations:
-        serial_number = probe.annotations["serial_number"]
-    else:
-        serial_number = None
-    if "model_name" in probe.annotations:
-        model_name = probe.annotations["model_name"]
-    else:
-        model_name = None
-    if "manufacturer" in probe.annotations:
-        manufacturer = probe.annotations["manufacturer"]
-    else:
-        manufacturer = None
+    serial_number = probe.serial_number
+    model_name = probe.model_name
+    manufacturer = probe.manufacturer
+    name = name if name is not None else probe.name
 
     probe_device = Probe(
-        name=probe.annotations["name"],
+        name=name,
         model_name=model_name,
         serial_number=serial_number,
         manufacturer=manufacturer,
