@@ -78,6 +78,9 @@ class TestProbeConstructors(TestCase):
         contact_table = device_w_indices.contact_table
         np.testing.assert_array_equal(contact_table["device_channel_index_pi"][:], device_channel_indices)
 
+        devices_w_names = Probe.from_probeinterface(probe, name="Test Probe")
+        assert devices_w_names[0].name == "Test Probe"
+
     def test_constructor_from_probe_multi_shank(self):
         """Test that the constructor from Probe sets values as expected for multi-shank."""
 
@@ -110,7 +113,7 @@ class TestProbeConstructors(TestCase):
         """Test that the constructor from probegroup sets values as expected."""
 
         probegroup = self.probegroup
-        global_device_channel_indices = np.arange(probegroup.get_channel_count())
+        global_device_channel_indices = np.arange(probegroup.get_contact_count())
         probegroup.set_global_device_channel_indices(global_device_channel_indices)
         devices = Probe.from_probeinterface(probegroup)
         probes = probegroup.probes
