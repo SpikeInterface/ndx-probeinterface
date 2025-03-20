@@ -21,6 +21,10 @@ groups:
     default_value: micrometer
     doc: SI unit used to define the probe; e.g. 'meter'.
     required: false
+  - name: annotations
+    dtype: text
+    doc: annotations attached to the probe
+    required: false
   datasets:
   - name: planar_contour
     dtype: float

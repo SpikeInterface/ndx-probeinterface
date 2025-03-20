@@ -100,7 +100,13 @@ def main():
     probe = NWBGroupSpec(
         doc="Neural probe object according to probeinterface specification",
         attributes=[
-            NWBAttributeSpec(name="ndim", doc="dimension of the probe", dtype="int", required=True, default_value=2),
+            NWBAttributeSpec(
+                name="ndim",
+                doc="dimension of the probe",
+                dtype="int",
+                required=True,
+                default_value=2
+            ),
             NWBAttributeSpec(
                 name="model_name",
                 doc="model of the probe; e.g. 'Neuropixels 1.0'",
@@ -119,6 +125,12 @@ def main():
                 dtype="text",
                 required=True,
                 default_value="micrometer",
+            ),
+            NWBAttributeSpec(
+                name="annotations",
+                doc="annotations attached to the probe",
+                dtype="text",
+                required=False
             ),
         ],
         neurodata_type_inc="Device",

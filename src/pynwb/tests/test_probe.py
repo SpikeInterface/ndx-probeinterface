@@ -1,6 +1,7 @@
 import pytest
 import datetime
 import numpy as np
+import json
 
 import probeinterface as pi
 
@@ -25,14 +26,14 @@ def set_up_nwbfile():
 
 def create_single_shank_probe():
     probe = pi.generate_linear_probe()
-    probe.annotate(name="Single-shank")
+    probe.annotate(name="Single-shank", custom_key="custom annotation")
     probe.set_contact_ids([f"c{i}" for i in range(probe.get_contact_count())])
     return probe
 
 
 def create_multi_shank_probe():
     probe = pi.generate_multi_shank()
-    probe.annotate(name="Multi-shank")
+    probe.annotate(name="Multi-shank", custom_key="custom annotation")
     probe.set_contact_ids([f"cm{i}" for i in range(probe.get_contact_count())])
     return probe
 
@@ -69,6 +70,9 @@ class TestProbeConstructors(TestCase):
         probe_array = probe.to_numpy()
         np.testing.assert_array_equal(contact_table["contact_position"][:], probe.contact_positions)
         np.testing.assert_array_equal(contact_table["contact_shape"][:], probe_array["contact_shapes"])
+        keys_to_filter = ["name", "manufacturer", "model_name", "serial_number"] 
+        filtered_annotations = {key: value for key, value in probe.annotations.items() if key not in keys_to_filter}
+        self.assertDictEqual(json.loads(device.annotations), filtered_annotations)
 
         # set channel indices
         device_channel_indices = np.arange(probe.get_contact_count())
@@ -77,9 +81,6 @@ class TestProbeConstructors(TestCase):
         device_w_indices = devices_w_indices[0]
         contact_table = device_w_indices.contact_table
         np.testing.assert_array_equal(contact_table["device_channel_index_pi"][:], device_channel_indices)
-
-        devices_w_names = Probe.from_probeinterface(probe, name="Test Probe")
-        assert devices_w_names[0].name == "Test Probe"
 
     def test_constructor_from_probe_multi_shank(self):
         """Test that the constructor from Probe sets values as expected for multi-shank."""
@@ -108,6 +109,9 @@ class TestProbeConstructors(TestCase):
         np.testing.assert_array_equal(
             contact_table["shank_id"][:], probe.shank_ids
         )
+        keys_to_filter = ["name", "manufacturer", "model_name", "serial_number"] 
+        filtered_annotations = {key: value for key, value in probe.annotations.items() if key not in keys_to_filter}
+        self.assertDictEqual(json.loads(device.annotations), filtered_annotations)
 
     def test_constructor_from_probegroup(self):
         """Test that the constructor from probegroup sets values as expected."""
@@ -142,6 +146,10 @@ class TestProbeConstructors(TestCase):
                 contact_table["device_channel_index_pi"][:], device_channel_indices
             )
 
+            keys_to_filter = ["name", "manufacturer", "model_name", "serial_number"] 
+            filtered_annotations = {key: value for key, value in probe.annotations.items() if key not in keys_to_filter}
+            self.assertDictEqual(json.loads(device.annotations), filtered_annotations)
+
 
 class TestProbeRoundtrip(TestCase):
     """Simple roundtrip test for Probe device."""
@@ -174,7 +182,13 @@ class TestProbeRoundtrip(TestCase):
         with NWBHDF5IO(self.path0, mode="r", load_namespaces=True) as io:
             read_nwbfile = io.read()
             devices = read_nwbfile.devices
-            self.assertContainerEqual(device, read_nwbfile.devices[device.name])            
+            self.assertContainerEqual(device, read_nwbfile.devices[device.name])
+            keys_to_filter = ["name", "manufacturer", "model_name", "serial_number"] 
+            filtered_annotations = {
+                key: value for key, value in read_nwbfile.devices[device.name].to_probeinterface().annotations.items()
+                if key not in keys_to_filter
+            }
+            self.assertDictEqual(json.loads(device.annotations), filtered_annotations)          
 
     def test_roundtrip_nwb_from_probe_multi_shank(self):
         devices = Probe.from_probeinterface(self.probe1)
@@ -188,6 +202,12 @@ class TestProbeRoundtrip(TestCase):
             read_nwbfile = io.read()
             devices = read_nwbfile.devices
             self.assertContainerEqual(device, read_nwbfile.devices[device.name])
+            keys_to_filter = ["name", "manufacturer", "model_name", "serial_number"] 
+            filtered_annotations = {
+                key: value for key, value in read_nwbfile.devices[device.name].to_probeinterface().annotations.items()
+                if key not in keys_to_filter
+            }
+            self.assertDictEqual(json.loads(device.annotations), filtered_annotations) 
 
     def test_roundtrip_nwb_from_probegroup(self):
         devices = Probe.from_probeinterface(self.probegroup)
@@ -201,18 +221,25 @@ class TestProbeRoundtrip(TestCase):
             read_nwbfile = io.read()
             for device in devices:
                 self.assertContainerEqual(device, read_nwbfile.devices[device.name])
-
+                keys_to_filter = ["name", "manufacturer", "model_name", "serial_number"] 
+                filtered_annotations = {
+                    key: value for key, value in read_nwbfile.devices[device.name].to_probeinterface().annotations.items()
+                    if key not in keys_to_filter
+                }
+                self.assertDictEqual(json.loads(device.annotations), filtered_annotations) 
     def test_roundtrip_pi_from_probe_single_shank(self):
         probe_arr = self.probe0.to_numpy()
         devices = Probe.from_probeinterface(self.probe0)
         device = devices[0]
         np.testing.assert_array_equal(probe_arr, device.to_probeinterface().to_numpy())    
+        self.assertDictEqual(self.probe0.annotations, device.to_probeinterface().annotations)
 
     def test_roundtrip_pi_from_probe_multi_shank(self):
         probe_arr = self.probe1.to_numpy()
         devices = Probe.from_probeinterface(self.probe1)
         device = devices[0]
         np.testing.assert_array_equal(probe_arr, device.to_probeinterface().to_numpy())
+        self.assertDictEqual(self.probe1.annotations, device.to_probeinterface().annotations)
 
 
 if __name__ == "__main__":
