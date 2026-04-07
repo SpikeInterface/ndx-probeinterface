@@ -93,8 +93,9 @@ def to_probeinterface(ndx_probe) -> Probe:
     for possible_shape_key in possible_shape_keys:
         if possible_shape_key in contact_table.colnames:
             if shape_params is None:
-                shape_params = []
-            shape_params.append([{possible_shape_key: val} for val in contact_table[possible_shape_key][:]])
+                shape_params = [{} for _ in range(len(contact_table))]
+            for i in range(len(contact_table)):
+                shape_params[i][possible_shape_key] = contact_table[possible_shape_key][i]
 
     positions = [item for sublist in positions for item in sublist]
     shapes = [item for sublist in shapes for item in sublist]
@@ -103,8 +104,6 @@ def to_probeinterface(ndx_probe) -> Probe:
         contact_ids = [item for sublist in contact_ids for item in sublist]
     if plane_axes is not None:
         plane_axes = [item for sublist in plane_axes for item in sublist]
-    if shape_params is not None:
-        shape_params = [item for sublist in shape_params for item in sublist]
     if shank_ids is not None:
         shank_ids = [item for sublist in shank_ids for item in sublist]
     if device_channel_indices is not None:
@@ -170,13 +169,19 @@ def _single_probe_to_nwb_device(probe: Probe):
         contact_table.add_row(kwargs)
 
     annotations = probe.annotations.copy()
-    name = annotations.pop("name") if "name" in annotations else None
-    serial_number = annotations.pop("serial_number") if "serial_number" in annotations else None
-    model_name = annotations.pop("model_name") if "model_name" in annotations else None
-    manufacturer = annotations.pop("manufacturer") if "manufacturer" in annotations else None
+    name = probe.name
+    serial_number = probe.serial_number
+    model_name = probe.model_name
+    manufacturer = probe.manufacturer
+
+    # Remove key annotations already stored as attributes in the Probe device
+    annotations.pop("name", None)
+    annotations.pop("serial_number", None)
+    annotations.pop("model_name", None)
+    annotations.pop("manufacturer", None)
 
     probe_device = Probe(
-        name=name,
+        name=name if name is not None else "Probe",
         model_name=model_name,
         serial_number=serial_number,
         manufacturer=manufacturer,
