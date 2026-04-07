@@ -9,7 +9,7 @@ def main():
     ns_builder = NWBNamespaceBuilder(
         doc="""Extension for defining neural probes in the probeinterface format""",
         name="""ndx-probeinterface""",
-        version="""0.1.0""",
+        version="""0.2.1""",
         author=["Alessio Buccino", "Kyu Hyun Lee", "Geeling Chau"],
         contact=["alessiop.buccino@gmail.com", "kyuhyun9056@gmail.com", "gchau@caltech.edu"],
     )
